@@ -25,9 +25,10 @@ const products = productsFromServer.map((product) => {
 export const App = () => {
   const [userFilter, setUserFirler] = useState(null);
   const [titleSearch, setTitleSearch] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState([]);
 
   const visibleProducts = products.filter((product) => {
-    const { user, name } = product;
+    const { name, user, category } = product;
 
     const filterByUser = userFilter
       ? user.name === userFilter
@@ -37,12 +38,17 @@ export const App = () => {
       ? name.toLowerCase().includes(titleSearch)
       : true;
 
-    return filterByUser && filterByTitle;
+    const filterByCategory = categoryFilter.length
+      ? categoryFilter.includes(category.title)
+      : true;
+
+    return filterByUser && filterByTitle && filterByCategory;
   });
 
   const resetAllFilters = () => {
-    setUserFirler(null);
-    setTitleSearch('');
+    resetUserSelect();
+    resetTitleSearch();
+    resetCategoryChose();
   };
 
   const handleSelectUser = (userName) => {
@@ -51,8 +57,32 @@ export const App = () => {
     }
   };
 
+  const resetUserSelect = () => {
+    setUserFirler(null);
+  };
+
   const handleChangeTitleSearch = (event) => {
-    setTitleSearch(event.target.value.toLowerCase());
+    setTitleSearch(event.target.value.toLowerCase().trim());
+  };
+
+  const resetTitleSearch = () => {
+    setTitleSearch('');
+  };
+
+  const handleChoseCategory = (title) => {
+    if (categoryFilter.includes(title)) {
+      setCategoryFilter(state => (
+        state.filter(category => category !== title)
+      ));
+    } else {
+      setCategoryFilter(state => (
+        [...state, title]
+      ));
+    }
+  };
+
+  const resetCategoryChose = () => {
+    setCategoryFilter([]);
   };
 
   return (
@@ -71,9 +101,7 @@ export const App = () => {
                 className={classNames({
                   'is-active': userFilter === null,
                 })}
-                onClick={() => {
-                  handleSelectUser(null);
-                }}
+                onClick={resetUserSelect}
               >
                 All
               </a>
@@ -87,6 +115,7 @@ export const App = () => {
                   onClick={() => {
                     handleSelectUser(user.name);
                   }}
+                  key={user.id}
                 >
                   {user.name}
                 </a>
@@ -115,9 +144,7 @@ export const App = () => {
                       data-cy="ClearButton"
                       type="button"
                       className="delete"
-                      onClick={() => {
-                        setTitleSearch('');
-                      }}
+                      onClick={resetTitleSearch}
                     />
                   </span>
                 )}
@@ -128,15 +155,24 @@ export const App = () => {
               <a
                 href="#/"
                 data-cy="AllCategories"
-                className="button is-success mr-6 is-outlined"
+                className={classNames('button is-success mr-6', {
+                  'is-outlined': categoryFilter.length,
+                })}
+                onClick={resetCategoryChose}
               >
                 All
               </a>
               {categoriesFromServer.map(category => (
                 <a
                   data-cy="Category"
-                  className="button mr-2 my-1 is-info"
+                  className={classNames('button mr-2 my-1', {
+                    'is-info': categoryFilter.includes(category.title),
+                  })}
                   href="#/"
+                  onClick={() => {
+                    handleChoseCategory(category.title);
+                  }}
+                  key={category.id}
                 >
                   {category.title}
                 </a>
