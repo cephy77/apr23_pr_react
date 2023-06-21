@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-export const ProductList = ({ products }) => (
+export const ProductList = ({ products, setSort, sortType, columnName }) => (
   <div className="box table-container">
     {products.length
       ? (
@@ -11,53 +11,31 @@ export const ProductList = ({ products }) => (
         >
           <thead>
             <tr>
-              <th>
-                <span className="is-flex is-flex-wrap-nowrap">
-                  ID
+              {['ID', 'Product', 'Category', 'User'].map(column => (
+                <th>
+                  <span className="is-flex is-flex-wrap-nowrap">
+                    {column}
 
-                  <a href="#/">
-                    <span className="icon">
-                      <i data-cy="SortIcon" className="fas fa-sort" />
-                    </span>
-                  </a>
-                </span>
-              </th>
-
-              <th>
-                <span className="is-flex is-flex-wrap-nowrap">
-                  Product
-
-                  <a href="#/">
-                    <span className="icon">
-                      <i data-cy="SortIcon" className="fas fa-sort-down" />
-                    </span>
-                  </a>
-                </span>
-              </th>
-
-              <th>
-                <span className="is-flex is-flex-wrap-nowrap">
-                  Category
-
-                  <a href="#/">
-                    <span className="icon">
-                      <i data-cy="SortIcon" className="fas fa-sort-up" />
-                    </span>
-                  </a>
-                </span>
-              </th>
-
-              <th>
-                <span className="is-flex is-flex-wrap-nowrap">
-                  User
-
-                  <a href="#/">
-                    <span className="icon">
-                      <i data-cy="SortIcon" className="fas fa-sort" />
-                    </span>
-                  </a>
-                </span>
-              </th>
+                    <a
+                      href="#/"
+                      onClick={() => {
+                        setSort(column);
+                      }}
+                    >
+                      <span className="icon">
+                        <i
+                          data-cy="SortIcon"
+                          className={classNames('fas', {
+                            'fa-sort': !sortType && columnName === column,
+                            'fa-sort-up': sortType === 'asc',
+                            'fa-sort-down': sortType === 'desc',
+                          })}
+                        />
+                      </span>
+                    </a>
+                  </span>
+                </th>
+              ))}
             </tr>
           </thead>
 

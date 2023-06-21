@@ -26,6 +26,8 @@ export const App = () => {
   const [userFilter, setUserFirler] = useState(null);
   const [titleSearch, setTitleSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState([]);
+  const [columnName, setColumnName] = useState(null);
+  const [sortType, setSortType] = useState(null);
 
   const visibleProducts = products.filter((product) => {
     const { name, user, category } = product;
@@ -83,6 +85,29 @@ export const App = () => {
 
   const resetCategoryChose = () => {
     setCategoryFilter([]);
+  };
+
+  const resetColumnSort = () => {
+    setColumnName(null);
+    setSortType(null);
+  };
+
+  const sortSetter = (column) => {
+    switch (true) {
+      case !columnName && !sortType:
+      case columnName !== column:
+        setColumnName(column);
+        setSortType('asc');
+        break;
+      case columnName === column && sortType === 'asc':
+        setSortType('desc');
+        break;
+      case columnName === column && sortType === 'desc':
+        resetColumnSort();
+        break;
+      default:
+        break;
+    }
   };
 
   return (
@@ -192,7 +217,12 @@ export const App = () => {
           </nav>
         </div>
 
-        <ProductList products={visibleProducts} />
+        <ProductList
+          products={visibleProducts}
+          setSort={sortSetter}
+          columntName={columnName}
+          sortType={sortType}
+        />
       </div>
     </div>
   );
