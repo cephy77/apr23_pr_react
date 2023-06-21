@@ -24,23 +24,35 @@ const products = productsFromServer.map((product) => {
 
 export const App = () => {
   const [userFilter, setUserFirler] = useState(null);
+  const [titleSearch, setTitleSearch] = useState('');
 
   const visibleProducts = products.filter((product) => {
-    if (userFilter) {
-      return product.user.name === userFilter;
-    }
+    const { user, name } = product;
 
-    return product;
+    const filterByUser = userFilter
+      ? user.name === userFilter
+      : true;
+
+    const filterByTitle = titleSearch
+      ? name.toLowerCase().includes(titleSearch)
+      : true;
+
+    return filterByUser && filterByTitle;
   });
 
   const resetAllFilters = () => {
     setUserFirler(null);
+    setTitleSearch('');
   };
 
   const handleSelectUser = (userName) => {
     if (userFilter !== userName) {
       setUserFirler(userName);
     }
+  };
+
+  const handleChangeTitleSearch = (event) => {
+    setTitleSearch(event.target.value.toLowerCase());
   };
 
   return (
@@ -88,21 +100,27 @@ export const App = () => {
                   type="text"
                   className="input"
                   placeholder="Search"
-                  value="qwe"
+                  value={titleSearch}
+                  onChange={handleChangeTitleSearch}
                 />
 
                 <span className="icon is-left">
                   <i className="fas fa-search" aria-hidden="true" />
                 </span>
 
-                <span className="icon is-right">
-                  {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                  <button
-                    data-cy="ClearButton"
-                    type="button"
-                    className="delete"
-                  />
-                </span>
+                {titleSearch && (
+                  <span className="icon is-right">
+                    {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
+                    <button
+                      data-cy="ClearButton"
+                      type="button"
+                      className="delete"
+                      onClick={() => {
+                        setTitleSearch('');
+                      }}
+                    />
+                  </span>
+                )}
               </p>
             </div>
 
